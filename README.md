@@ -1,11 +1,30 @@
-This is a Kotlin Multiplatform project targeting Desktop.
+# Modern ADB | A modern GUI ADB application for desktop
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+**Unlock the full potential of Android Debug Bridge (ADB) with this powerful tool!**
 
+This project provides a comprehensive and user-friendly interface to streamline your Android development and debugging workflow.
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+<img src="https://github.com/user-attachments/assets/7ae0de34-b167-43aa-b82e-b928aa83375a" width="300">
+
+## Features:
+
+*   **Simplified Commands:** Execute complex ADB commands with simple, intuitive inputs.
+*   **Unlock your phone with ease:** Just type your password, and ModernAdb will unlock your phone no matter if the screen is off or on.
+*   **Basic Navigation:** Navigate your device almost entirely without touching it!.
+*   **Device Management:** Easily manage multiple connected devices and emulators. [planned]
+*   **File System Navigation:** Browse and manage files on your Android device with ease. [planned]
+*   **Logcat Viewer:** Advanced logcat filtering and viewing capabilities. [planned]
+*   **Screenshot & Screen Recording:** Capture screenshots and record screen activity effortlessly. [planned]
+*   **And much more!**
+
+## Getting Started
+
+_(Instructions on how to install and use the tool will go here)_
+
+## Contributing
+
+We welcome contributions! Please see our `CONTRIBUTING.md` (once created) for guidelines.
+
+## License
+
+This project is licensed under the MIT License - see the `LICENSE` file for details.
