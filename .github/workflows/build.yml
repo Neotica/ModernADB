@@ -2,9 +2,9 @@ name: Build Desktop App
 
 on:
   push:
-    branches: [ main, cicd ] # Or whatever your main branch is
-  pull_request:
     branches: [ main, cicd ]
+  pull_request:
+    branches: [ main,cicd ]
 
 jobs:
   build:
@@ -29,14 +29,15 @@ jobs:
 
       # --- START OF FIX ---
       - name: Build with Gradle
-        # This step now uses a bash shell on all OSes for consistency.
-        # It checks the OS and runs the correct wrapper script.
+        # This step now runs the specific packaging task for each OS.
         shell: bash
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
-            ./gradlew.bat packageRelease
-          else
-            ./gradlew packageRelease
+            ./gradlew.bat packageMsi
+          elif [ "$RUNNER_OS" == "Linux" ]; then
+            ./gradlew packageDeb
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            ./gradlew packageDmg
           fi
       # --- END OF FIX ---
 
@@ -44,4 +45,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ModernADB-${{ matrix.os }}
-          path: composeApp/build/compose/binaries/main/release/
+          # This path uses wildcards to find the correct output file on each runner.
+          path: |
+            composeApp/build/compose/binaries/main/**/*.msi
+            composeApp/build/compose/binaries/main/**/*.dmg
+            composeApp/build/compose/binaries/main/**/*.deb
