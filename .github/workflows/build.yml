@@ -1,19 +1,18 @@
-name: Build Desktop App
+name: Build and Release Desktop App
 
+# This workflow triggers only when you push a new tag (e.g., v1.0.0)
 on:
   push:
-    branches: [ main, cicd ]
-  pull_request:
-    branches: [ main,cicd ]
+    tags:
+      - 'v*.*.*'
 
 jobs:
+  # Job 1: Build the application on all three platforms
   build:
     strategy:
       matrix:
-        # Define the operating systems to build on
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,9 +26,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      # --- START OF FIX ---
       - name: Build with Gradle
-        # This step now runs the specific packaging task for each OS.
         shell: bash
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
@@ -39,14 +36,37 @@ jobs:
           elif [ "$RUNNER_OS" == "macOS" ]; then
             ./gradlew packageDmg
           fi
-      # --- END OF FIX ---
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ModernADB-${{ matrix.os }}
-          # This path uses wildcards to find the correct output file on each runner.
           path: |
             composeApp/build/compose/binaries/main/**/*.msi
             composeApp/build/compose/binaries/main/**/*.dmg
             composeApp/build/compose/binaries/main/**/*.deb
+
+  # Job 2: Create the GitHub Release and upload the built files
+  release:
+    # This job depends on the 'build' job finishing successfully
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          # The path where the downloaded artifacts will be placed
+          path: artifacts
+
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          # This makes the release a draft so you can review it before publishing
+          draft: true
+          # This uses the tag name for the release title
+          name: Release ${{ github.ref_name }}
+          # This lists all the downloaded files to be uploaded to the release
+          files: |
+            artifacts/ModernADB-windows-latest/*.msi
+            artifacts/ModernADB-macos-latest/*.dmg
+            artifacts/ModernADB-ubuntu-latest/*.deb
