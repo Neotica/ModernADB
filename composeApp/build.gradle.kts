@@ -39,9 +39,24 @@ compose.desktop {
         mainClass = "id.neotica.modernadb.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "id.neotica.modernadb"
             packageVersion = "1.0.0"
+        }
+    }
+}
+
+// This creates a new custom task named "packageAll"
+tasks.register("packageAll") {
+    // Optional: This puts your task in a "distribution" folder in the Gradle tool window
+    group = "distribution"
+    description = "Builds all native distribution packages (MSI, DMG, DEB, RPM)."
+
+    // This is the key part: it tells Gradle to run these tasks first
+    val packageTasks = listOf("packageMsi", "packageDmg", "packageDeb", "packageRpm")
+    packageTasks.forEach { taskName ->
+        tasks.findByName(taskName)?.let {
+            dependsOn(it)
         }
     }
 }

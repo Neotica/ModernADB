@@ -1,0 +1,38 @@
+name: Build Desktop App
+
+on:
+  push:
+    branches: [ main, cicd ] # Or whatever your main branch is
+  pull_request:
+    branches: [ main, cicd ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        # Define the operating systems to build on
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin' # A standard, full JDK
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build with Gradle
+        # This command will run the appropriate packaging task for the current OS
+        run: ./gradlew packageRelease
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ModernADB-${{ matrix.os }}
+          path: composeApp/build/compose/binaries/main/release/
