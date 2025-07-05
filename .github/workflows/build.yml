@@ -2,9 +2,9 @@ name: Build Desktop App
 
 on:
   push:
-    branches: [ main ] # Or whatever your main branch is
+    branches: [ main, cicd ] # Or whatever your main branch is
   pull_request:
-    branches: [ main ]
+    branches: [ main, cicd ]
 
 jobs:
   build:
