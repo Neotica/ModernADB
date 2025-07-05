@@ -2,16 +2,16 @@ name: Build Desktop App
 
 on:
   push:
-    branches: [ main, cicd ] # Or whatever your main branch is
+    branches: [ main ] # Or whatever your main branch is
   pull_request:
-    branches: [ main, cicd ]
+    branches: [ main ]
 
 jobs:
   build:
     strategy:
       matrix:
         # Define the operating systems to build on
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -22,14 +22,23 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'temurin' # A standard, full JDK
+          distribution: 'temurin'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
+      # --- START OF FIX ---
       - name: Build with Gradle
-        # This command will run the appropriate packaging task for the current OS
-        run: ./gradlew packageRelease
+        # This step now uses a bash shell on all OSes for consistency.
+        # It checks the OS and runs the correct wrapper script.
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            ./gradlew.bat packageRelease
+          else
+            ./gradlew packageRelease
+          fi
+      # --- END OF FIX ---
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
