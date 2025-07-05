@@ -1,16 +1,20 @@
-# ADB Tool Pro
+# Modern ADB | A modern GUI ADB application for desktop
 
 **Unlock the full potential of Android Debug Bridge (ADB) with this powerful tool!**
 
 This project provides a comprehensive and user-friendly interface to streamline your Android development and debugging workflow.
 
+<img src="https://github.com/user-attachments/assets/7ae0de34-b167-43aa-b82e-b928aa83375a" width="300">
+
 ## Features:
 
 *   **Simplified Commands:** Execute complex ADB commands with simple, intuitive inputs.
-*   **Device Management:** Easily manage multiple connected devices and emulators.
-*   **File System Navigation:** Browse and manage files on your Android device with ease.
-*   **Logcat Viewer:** Advanced logcat filtering and viewing capabilities.
-*   **Screenshot & Screen Recording:** Capture screenshots and record screen activity effortlessly.
+*   **Unlock your phone with ease:** Just type your password, and ModernAdb will unlock your phone no matter if the screen is off or on.
+*   **Basic Navigation:** Navigate your device almost entirely without touching it!.
+*   **Device Management:** Easily manage multiple connected devices and emulators. [planned]
+*   **File System Navigation:** Browse and manage files on your Android device with ease. [planned]
+*   **Logcat Viewer:** Advanced logcat filtering and viewing capabilities. [planned]
+*   **Screenshot & Screen Recording:** Capture screenshots and record screen activity effortlessly. [planned]
 *   **And much more!**
 
 ## Getting Started
