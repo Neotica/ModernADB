@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.moko.resources)
 }
 
 kotlin {
@@ -22,6 +23,11 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            api(libs.moko.resources)
+            api(libs.moko.resources.compose)
+        }
+        multiplatformResources {
+            resourcesPackage.set("id.neotica.modernADB.res")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -42,6 +48,15 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "id.neotica.modernadb"
             packageVersion = "1.0.0"
+
+            project.file("src/desktopMain/composeResources/platform-tools").resolve(
+                when {
+                    System.getProperty("os.name").startsWith("Windows") -> "windows"
+                    System.getProperty("os.name") == "Mac OS X" -> "macos"
+                    System.getProperty("os.name").startsWith("Linux") -> "linux"
+                    else -> error("Unsupported OS")
+                }
+            )
         }
     }
 }
