@@ -2,6 +2,36 @@ package id.neotica.modernadb.adb.android
 
 object AdbInput {
 
+    fun deviceList() = exec("adb devices")
+    fun powerButton() = exec("adb shell input keyevent 26")
+    fun isAwake(): Boolean {
+        val output = exec("adb shell dumpsys power | grep \"mWakefulness=\"").inputStream.bufferedReader().readText()
+        print(output)
+        return output.contains("mWakefulness=Awake")
+    }
+    fun unlock(password: String) {
+        val maxAttempts = 3
+        var currentAttempt = 0
+
+        while (currentAttempt < maxAttempts) {
+            val output = exec("adb shell dumpsys power | grep \"mWakefulness=\"").inputStream.bufferedReader().readText()
+
+            print("output: $output")
+            if (output.contains( "mWakefulness=Awake")) {
+                println("Screen is ON.")
+                exec("adb shell input swipe 500 1000 500 500 200")
+                exec("adb shell input text \"$password\"")
+                break // Exit the loop
+            } else {
+                println("Screen is OFF. Sending wakeup command (Attempt ${currentAttempt + 1})...")
+                exec("adb shell input keyevent KEYCODE_WAKEUP")
+                // Wait a moment for the device to respond before checking again
+                Thread.sleep(500) // 0.5 seconds
+            }
+            currentAttempt++
+        }
+    }
+
     fun sendText(message: String) {
         val formatted = formatMessage(message)
         exec("adb shell input text \"$formatted\"")

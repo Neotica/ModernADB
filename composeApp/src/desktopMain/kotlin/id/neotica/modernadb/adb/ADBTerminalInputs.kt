@@ -2,42 +2,6 @@ package id.neotica.modernadb.adb
 
 import id.neotica.modernadb.adb.android.AdbInput
 
-fun adbTerminalInputs() {
-    while (true) {
-        println("Type --list for command list")
-        Thread.sleep(500)
-        print("Type message to send (or 'exit'): ")
-        val input = readlnOrNull() ?: break
-        when(input) {
-//            "--list" -> println(adbCommands)
-            "home" -> AdbInput.homeButton()
-            "recent" -> AdbInput.recentButton()
-            "back" -> AdbInput.backButton()
-            "switch" -> AdbInput.switchApp()
-            "next", ">" -> AdbInput.nextButton()
-            "prev", "<" -> AdbInput.prevButton()
-            "up" -> AdbInput.upButton()
-            "down" -> AdbInput.downButton()
-            "enter" -> AdbInput.sendEnter()
-            "write" -> {
-                if (input.lowercase() == "exit") break
-                print("Write message: ")
-                val writeInput = readlnOrNull() ?: break
-
-                AdbInput.sendText(writeInput)
-                Thread.sleep(200)
-                AdbInput.sendEnter()
-                Thread.sleep(300)
-            }
-            "aMan" -> AdbInput.activityManager()
-            "exit" -> break
-            else -> {
-                println("nah")
-            }
-        }
-    }
-}
-
 fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
     when {
 //            input == "--list" -> println(adbCommands)
@@ -59,7 +23,15 @@ fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
             AdbInput.switchApp()
             AdbInput.holdInputTime(500 , 1000, endY = 100, time = 100)
         }
-//        input == "exit" -> break
+        input == "isAwake" -> {
+            val awake = AdbInput.isAwake()
+            callback?.invoke(awake.toString())
+        }
+        input == "power" -> AdbInput.powerButton()
+        input == "devices" -> {
+            val output = AdbInput.deviceList().inputStream.bufferedReader().readText()
+            callback?.invoke(output)
+        }
         input.startsWith("midtap") -> {
             AdbInput.touchInput(600,1200)
         }
@@ -74,6 +46,35 @@ fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
         }
         input.startsWith("sleft") -> {
             AdbInput.holdInputTime(1000 , 1000, endX = 100, time = 100)
+        }
+        input.startsWith("swipe") -> {
+            // command example: "swipe100.300e100.200t2000"
+            val coordinates = input.substringAfter("swipe")
+            val start = coordinates.substringBefore("e")
+            val end = coordinates.substringAfter("e")
+
+            val startX = start.substringBefore(".").toIntOrNull()
+            val startY = start.substringAfter(".").toIntOrNull()
+            val endX = end.substringBefore(".").toIntOrNull()
+            val endY = end.substringAfter(".").substringBefore("t").toIntOrNull()
+
+            val time = coordinates.substringAfter("t").toIntOrNull()
+            println("" +
+                    "startX: $startX, startY: $startY, endX: $endX, endY: $endY, time: $time")
+            println("wait...")
+            time?.let { Thread.sleep(time.toLong()) }
+            println("finished.")
+            if (startX != null && startY != null) {
+                AdbInput.holdInputTime(
+                    startX = startX,
+                    startY = startY,
+                    endX = endX,
+                    endY = endY,
+                    time = time
+                )
+            } else {
+                println("Wrong input.")
+            }
         }
         input.startsWith("hold") -> {
             val coordinates = input.substringAfter("hold")
@@ -109,8 +110,6 @@ fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
             }
         }
         input.startsWith("w") -> {
-//            if (input.lowercase() == "exit") break
-            print("Writing...")
             callback?.invoke("Writing...")
             val writeInput = input.substringAfter("w ")
 
