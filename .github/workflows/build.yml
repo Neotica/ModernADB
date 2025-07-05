@@ -6,8 +6,11 @@ on:
     tags:
       - 'v*.*.*'
 
+# FIX 1: Add permissions for the release job to create a release.
+permissions:
+  contents: write
+
 jobs:
-  # Job 1: Build the application on all three platforms
   build:
     strategy:
       matrix:
@@ -41,32 +44,26 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ModernADB-${{ matrix.os }}
-          path: |
-            composeApp/build/compose/binaries/main/**/*.msi
-            composeApp/build/compose/binaries/main/**/*.dmg
-            composeApp/build/compose/binaries/main/**/*.deb
+          # FIX 2: Path now points to the directory containing the packages
+          path: composeApp/build/compose/binaries/main/
 
-  # Job 2: Create the GitHub Release and upload the built files
   release:
-    # This job depends on the 'build' job finishing successfully
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download all build artifacts
         uses: actions/download-artifact@v4
         with:
-          # The path where the downloaded artifacts will be placed
           path: artifacts
 
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
         with:
-          # This makes the release a draft so you can review it before publishing
           draft: true
-          # This uses the tag name for the release title
           name: Release ${{ github.ref_name }}
-          # This lists all the downloaded files to be uploaded to the release
+          # FIX 3: This simplified glob pattern will find all package files
+          # inside their respective downloaded folders.
           files: |
-            artifacts/ModernADB-windows-latest/*.msi
-            artifacts/ModernADB-macos-latest/*.dmg
-            artifacts/ModernADB-ubuntu-latest/*.deb
+            artifacts/ModernADB-windows-latest/msi/*.msi
+            artifacts/ModernADB-macos-latest/dmg/*.dmg
+            artifacts/ModernADB-ubuntu-latest/deb/*.deb
