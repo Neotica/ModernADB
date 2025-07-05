@@ -10,10 +10,10 @@ plugins {
 
 kotlin {
     jvm("desktop")
-    
+
     sourceSets {
         val desktopMain by getting
-        
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -46,8 +46,13 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
-            packageName = "id.neotica.modernadb"
+            packageName = "ModernADB"
             packageVersion = "1.0.0"
+
+            macOS {
+                val generatedIcon = layout.buildDirectory.file("generated/moko-resources/desktopMain/res/files/ModernADB.icns")
+                iconFile.set(generatedIcon)
+            }
 
             project.file("src/desktopMain/composeResources/platform-tools").resolve(
                 when {
