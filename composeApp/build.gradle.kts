@@ -27,7 +27,7 @@ kotlin {
             api(libs.moko.resources.compose)
         }
         multiplatformResources {
-            resourcesPackage.set("id.neotica.modernADB.res")
+            resourcesPackage.set("id.neotica.modernadb.res")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -80,3 +80,12 @@ tasks.register("packageAll") {
         }
     }
 }
+
+//val copyAdbToResources by tasks.registering(Copy::class) {
+//    from(layout.buildDirectory.dir("generated/moko-resources/desktopMain/res/files/adbmac"))
+//    into("src/desktopMain/resources/adbmac")
+//}
+//
+//tasks.named("desktopProcessResources") {
+//    dependsOn(copyAdbToResources)
+//}

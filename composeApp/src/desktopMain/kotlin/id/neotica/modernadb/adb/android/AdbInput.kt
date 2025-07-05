@@ -13,7 +13,9 @@ object AdbInput {
             System.getenv("ANDROID_HOME"),
             "${System.getProperty("user.home")}/Library/Android/sdk",
             "/usr/local/share/android-sdk",
-            "/opt/android-sdk"
+            "/opt/android-sdk",
+//            "generated/moko-resources/desktopMain/res/files/adbmac",
+//            MR.files
         )
 
         val found = sdkDirs
