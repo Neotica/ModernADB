@@ -1,11 +1,26 @@
-This is a Kotlin Multiplatform project targeting Desktop.
+# ADB Tool Pro
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+**Unlock the full potential of Android Debug Bridge (ADB) with this powerful tool!**
 
+This project provides a comprehensive and user-friendly interface to streamline your Android development and debugging workflow.
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## Features:
+
+*   **Simplified Commands:** Execute complex ADB commands with simple, intuitive inputs.
+*   **Device Management:** Easily manage multiple connected devices and emulators.
+*   **File System Navigation:** Browse and manage files on your Android device with ease.
+*   **Logcat Viewer:** Advanced logcat filtering and viewing capabilities.
+*   **Screenshot & Screen Recording:** Capture screenshots and record screen activity effortlessly.
+*   **And much more!**
+
+## Getting Started
+
+_(Instructions on how to install and use the tool will go here)_
+
+## Contributing
+
+We welcome contributions! Please see our `CONTRIBUTING.md` (once created) for guidelines.
+
+## License
+
+This project is licensed under the MIT License - see the `LICENSE` file for details.
