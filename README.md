@@ -4,7 +4,7 @@
 
 This project provides a comprehensive and user-friendly interface to streamline your Android development and debugging workflow.
 
-<img src="https://github.com/user-attachments/assets/6db1dfef-d4e9-41db-afe9-219e6eafcfe6" width="300">
+<img src="https://github.com/user-attachments/assets/eebe588a-29c8-425b-bebb-0acfd382d0ef" width="300">
 
 <img src="https://github.com/user-attachments/assets/7ae0de34-b167-43aa-b82e-b928aa83375a" width="300">
 
