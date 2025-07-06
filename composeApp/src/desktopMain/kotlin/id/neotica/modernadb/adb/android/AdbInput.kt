@@ -94,6 +94,7 @@ object AdbInput {
     fun longPressPowerButton() = exec("adb shell input keyevent --longpress 26")
 
     //power
+    fun shutdownLegacy() = exec("adb shell shutdown")
     fun shutdown() = exec("adb reboot -p")
     fun reboot() = exec("adb reboot")
     fun rebootRecovery() = exec("adb reboot recovery")

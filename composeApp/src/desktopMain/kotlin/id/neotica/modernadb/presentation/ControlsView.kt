@@ -118,6 +118,7 @@ fun ControlsView(
             }
             if (powerState) {
                 ButtonBasic("Shut down") { AdbInput.shutdown() }
+                ButtonBasic("Shut down Legacy") { AdbInput.shutdownLegacy() }
                 ButtonBasic("Reboot") { AdbInput.reboot() }
                 ButtonBasic("Reboot Recovery") { AdbInput.rebootRecovery() }
                 ButtonBasic("Reboot Bootloader") { AdbInput.rebootBootloader() }
