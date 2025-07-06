@@ -45,7 +45,6 @@ fun CommandView(modifier: Modifier = Modifier) {
     ){
         Column(
             modifier = Modifier
-//                .fillMaxWidth()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -53,11 +52,8 @@ fun CommandView(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                // 2. The Switch logic is now based on the sealed class state.
                 Switch(
-                    // The switch is "on" (checked) if the mode is Write.
                     checked = currentMode == InputMode.Write,
-                    // When the switch is toggled, update the state to the corresponding mode.
                     onCheckedChange = { isChecked ->
                         currentMode = if (isChecked) InputMode.Write else InputMode.Command
                     }

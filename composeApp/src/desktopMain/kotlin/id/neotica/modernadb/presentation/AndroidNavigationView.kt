@@ -32,7 +32,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(InternalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun AndroidNavigationView() {
+fun AndroidNavigationView(
+) {
     var expanded by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
@@ -51,6 +52,7 @@ fun AndroidNavigationView() {
                 NeoIcon(
                     desc = "Back",
                     image = MR.images.nav_back,
+                    size = 48.dp,
                     onClick = {
                         scope.launch { idiomaticAdbInputs("back") }
                     }
@@ -58,6 +60,7 @@ fun AndroidNavigationView() {
                 NeoIcon(
                     desc = "Home",
                     image = MR.images.nav_home,
+                    size = 48.dp,
                     onClick = {
                         scope.launch { idiomaticAdbInputs("home") }
                     }
@@ -65,6 +68,7 @@ fun AndroidNavigationView() {
                 NeoIcon(
                     desc = "Recent App",
                     image = MR.images.nav_recent,
+                    size = 48.dp,
                     onClick = {
                         scope.launch { idiomaticAdbInputs("switch") }
                     }

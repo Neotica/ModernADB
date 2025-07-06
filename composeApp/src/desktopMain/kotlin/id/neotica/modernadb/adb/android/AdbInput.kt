@@ -6,6 +6,7 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 object AdbInput {
+    var selectedDevice: String? = null
 
     private val adbExecutablePath: String by lazy {
         val sdkDirs = listOfNotNull(
@@ -13,9 +14,7 @@ object AdbInput {
             System.getenv("ANDROID_HOME"),
             "${System.getProperty("user.home")}/Library/Android/sdk",
             "/usr/local/share/android-sdk",
-            "/opt/android-sdk",
-//            "generated/moko-resources/desktopMain/res/files/adbmac",
-//            MR.files
+            "/opt/android-sdk"
         )
 
         val found = sdkDirs
@@ -25,18 +24,18 @@ object AdbInput {
         found?.absolutePath ?: error("ADB not found in common locations. Please install Android SDK.")
     }
 
-    /**
-     * Executes a command using the system shell, which correctly handles pipes and other features.
-     * It returns the Process object for further handling.
-     */
     private fun exec(cmd: String, waitAfter: Long = 100): Process {
         val fullCommand = cmd.replaceFirst("adb", adbExecutablePath)
         println("DEBUG: Executing command: '$fullCommand'")
+        val test = "adb devices"
+        val formattedSelectedAdb = fullCommand.replaceFirst("adb", "adb -s $selectedDevice")
+
+        println("modernadb: ${test.replaceFirst("adb", "adb -s $selectedDevice")}")
 
         val processBuilder = if (System.getProperty("os.name").startsWith("Windows")) {
-            ProcessBuilder("cmd.exe", "/c", fullCommand)
+            ProcessBuilder("cmd.exe", "/c", formattedSelectedAdb)
         } else {
-            ProcessBuilder("sh", "-c", fullCommand)
+            ProcessBuilder("sh", "-c", formattedSelectedAdb)
         }
 
         val environment = processBuilder.environment()
@@ -60,7 +59,7 @@ object AdbInput {
         return process
     }
 
-    fun deviceList(): String {
+    fun getDevices(): String {
         return try {
             val process = exec("adb devices")
             val reader = process.inputStream.bufferedReader().readText()
@@ -75,7 +74,31 @@ object AdbInput {
         }
     }
 
+    fun getDeviceList(): List<String> {
+        return try {
+            val process = exec("adb devices")
+            val reader = process.inputStream.bufferedReader().readText()
+            val result = reader.lines().drop(1).mapNotNull {
+                val serial = it.split('\t').firstOrNull()
+                serial?.takeIf { serial.isNotBlank() }
+            }
+
+            println("result: $result")
+            result
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
     fun powerButton() = exec("adb shell input keyevent 26")
+    fun longPressPowerButton() = exec("adb shell input keyevent --longpress 26")
+
+    //power
+    fun shutdown() = exec("adb reboot -p")
+    fun reboot() = exec("adb reboot")
+    fun rebootRecovery() = exec("adb reboot recovery")
+    fun rebootBootloader() = exec("adb reboot bootloader")
+
 
     fun isAwake(): Boolean {
         return try {

@@ -28,7 +28,7 @@ fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
         }
         input == "power" -> AdbInput.powerButton()
         input == "devices" -> {
-            val output = AdbInput.deviceList()//.inputStream.bufferedReader().readText()
+            val output = AdbInput.getDevices()//.inputStream.bufferedReader().readText()
             callback?.invoke(output)
         }
         input.startsWith("midtap") -> {
@@ -114,8 +114,6 @@ fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
 
             AdbInput.sendText(writeInput)
             Thread.sleep(200)
-            AdbInput.sendEnter()
-            Thread.sleep(300)
             callback?.invoke("")
         }
         else -> {

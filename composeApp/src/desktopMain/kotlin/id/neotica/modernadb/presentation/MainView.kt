@@ -42,6 +42,7 @@ fun MainView() {
                     DeviceListView()
                 }
                 Spacer(Modifier.padding(8.dp))
+
                 when {
                     maxWidth < 550.dp -> {
                         Column(
