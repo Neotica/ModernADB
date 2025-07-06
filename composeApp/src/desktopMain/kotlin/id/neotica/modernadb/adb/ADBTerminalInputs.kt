@@ -20,8 +20,7 @@ fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
         input == "stab" -> AdbInput.shiftTab()
         input == "bs" -> AdbInput.backspaceButton()
         input == "fc" -> {
-            AdbInput.switchApp()
-            AdbInput.holdInputTime(500 , 1000, endY = 100, time = 100)
+            AdbInput.forceClose()
         }
         input == "isAwake" -> {
             val awake = AdbInput.isAwake()
@@ -36,10 +35,10 @@ fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
             AdbInput.touchInput(600,1200)
         }
         input.startsWith("sdown") -> {
-            AdbInput.holdInputTime(500 , 2000, endY = 500, time = 100)
+            AdbInput.swipeDown()
         }
         input.startsWith("sup") -> {
-            AdbInput.holdInputTime(500 , 500, endY = 2000, time = 100)
+            AdbInput.swipeUp()
         }
         input.startsWith("sright") -> {
             AdbInput.holdInputTime(100 , 1000, endX = 1000, time = 100)

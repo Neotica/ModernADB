@@ -65,7 +65,7 @@ object AdbInput {
             val process = exec("adb devices")
             val reader = process.inputStream.bufferedReader().readText()
             val errors = process.errorStream.bufferedReader().readText()
-            val combined = "STDOUT:\n$reader\nSTDERR:\n$errors"
+            val combined = "$reader$errors"
             println(combined)
             combined
         } catch (e: Exception) {
@@ -139,6 +139,12 @@ object AdbInput {
 
     fun touchInput(x: Int, y: Int) = exec("adb shell input tap $x $y")
 
+    fun forceClose() {
+        switchApp()
+        holdInputTime(500 , 1000, endY = 100, time = 100)
+    }
+    fun swipeUp() = holdInputTime(500, 2000, 500, 500, 100)
+    fun swipeDown() = holdInputTime(500, 500, 500, 2000, 100)
     fun holdInputTime(
         startX: Int, startY: Int, endX: Int? = startX, endY: Int? = startY, time: Int? = 500
     ) = exec("adb shell input swipe $startX $startY $endX $endY $time")

@@ -33,19 +33,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun CommandView() {
+fun CommandView(modifier: Modifier = Modifier) {
     var input by remember { mutableStateOf("") }
     var eventMessages by remember { mutableStateOf("") }
     var currentMode by remember { mutableStateOf<InputMode>(InputMode.Command) }
 
     val scope = rememberCoroutineScope()
 
-    Card{
+    Card(
+        modifier = modifier
+    ){
         Column(
             modifier = Modifier
 //                .fillMaxWidth()
-//                .weight(1f)
                 .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

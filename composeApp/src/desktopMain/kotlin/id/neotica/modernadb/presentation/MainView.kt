@@ -26,8 +26,6 @@ fun MainView() {
     BoxWithConstraints(
         Modifier.fillMaxWidth()
     ) {
-        val isWideScreen = maxWidth > 600.dp
-
         LazyColumn(
             state = listState,
             contentPadding = PaddingValues(16.dp),
@@ -38,33 +36,52 @@ fun MainView() {
                 Row(
                     modifier = Modifier
                         .fillMaxSize(),
-//                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     DeviceListView()
                 }
                 Spacer(Modifier.padding(8.dp))
-                if (isWideScreen) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalArrangement = Arrangement.Center,
-                    ) {
-                        Column {
+                when {
+                    maxWidth < 550.dp -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             CommandView()
-                            Spacer(Modifier.padding(8.dp))
                             AndroidNavigationView()
+                            ControlsView()
                         }
-                        Spacer(Modifier.padding(8.dp))
-                        ControlsView()
                     }
-                } else {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        CommandView()
-                        AndroidNavigationView()
-                        ControlsView()
+                    maxWidth < 840.dp -> {
+                        // Show layout for Medium screens
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                CommandView()
+                                Spacer(Modifier.padding(8.dp))
+                                AndroidNavigationView()
+                            }
+                            Spacer(Modifier.padding(8.dp))
+                            ControlsView()
+                        }
+                    }
+                    else -> {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            CommandView()
+                            AndroidNavigationView()
+                            ControlsView()
+                        }
                     }
                 }
             }

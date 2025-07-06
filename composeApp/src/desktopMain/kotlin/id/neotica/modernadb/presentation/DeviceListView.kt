@@ -11,42 +11,40 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import id.neotica.modernadb.adb.idiomaticAdbInputs
-import id.neotica.modernadb.presentation.components.ButtonBasic
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import id.neotica.modernadb.adb.android.AdbInput
+import id.neotica.modernadb.presentation.components.NeoIcon
+import id.neotica.modernadb.res.MR
 
 @Composable
 fun DeviceListView() {
     Card {
         var eventMessages by remember { mutableStateOf("") }
-        val scope = rememberCoroutineScope()
 
         LaunchedEffect(Unit) {
-            idiomaticAdbInputs("devices") { eventMessages = it }
+            eventMessages = AdbInput.deviceList()
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
-//                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(eventMessages)
-                ButtonBasic("Reload") {
-                    scope.launch(Dispatchers.IO) {
-                        idiomaticAdbInputs("devices") { eventMessages = it }
+                NeoIcon(
+                    desc = "Refresh",
+                    image = MR.images.ic_reload,
+                    onClick = {
+                        eventMessages = AdbInput.deviceList()
                     }
-                }
+                )
             }
             AboutView()
 
