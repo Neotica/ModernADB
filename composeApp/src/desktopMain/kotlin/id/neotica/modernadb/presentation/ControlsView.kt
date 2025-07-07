@@ -13,6 +13,10 @@ import androidx.compose.material.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material.TextField
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +39,7 @@ import id.neotica.modernadb.utils.device.SupportedDevice
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ControlsView(
     modifier: Modifier = Modifier
@@ -91,11 +96,19 @@ fun ControlsView(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ButtonBasic("Unlock") {
-                    scope.launch {
-                        unlock(password, selectedDevice, selectedMethod)
+
+                TooltipBox(
+                    positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+                    tooltip = { Text("Unlocking device is currently experimental.") },
+                    state = rememberTooltipState()
+                ) {
+                    ButtonBasic("Unlock") {
+                        scope.launch {
+                            unlock(password, selectedDevice, selectedMethod)
+                        }
                     }
                 }
+
 
                 DropdownBasic(
                     items = deviceList,

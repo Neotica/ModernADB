@@ -167,20 +167,20 @@ private fun ArrowViews() {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ButtonBasic("Up") {
-            AdbInput.sendKey(23)
+            AdbInput.upButton()
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ButtonBasic("<") {
-                AdbInput.sendKey(21)
+                AdbInput.prevButton()
             }
             ButtonBasic("Down") {
-                AdbInput.sendKey(24)
+                AdbInput.downButton()
             }
             ButtonBasic(">") {
-                AdbInput.sendKey(22)
+                AdbInput.nextButton()
             }
         }
     }
