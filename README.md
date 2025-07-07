@@ -1,10 +1,12 @@
+<img src="https://github.com/user-attachments/assets/77860500-927c-4ae5-ba62-d5eac8cbdb7f" width="20%" />
+
 # Modern ADB | A modern GUI ADB application for desktop
 
 **Unlock the full potential of Android Debug Bridge (ADB) with this powerful tool!**
 
 This project provides a comprehensive and user-friendly interface to streamline your Android development and debugging workflow.
 
-<img src="https://github.com/user-attachments/assets/31cccda8-2783-4522-9e28-a28300f3b1b9" width="300">
+<img src="https://github.com/user-attachments/assets/31cccda8-2783-4522-9e28-a28300f3b1b9" width="50%">
 
 ## Features:
 
