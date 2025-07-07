@@ -53,15 +53,6 @@ compose.desktop {
                 val generatedIcon = layout.buildDirectory.file("generated/moko-resources/desktopMain/res/files/ModernADB.icns")
                 iconFile.set(generatedIcon)
             }
-
-            project.file("src/desktopMain/composeResources/platform-tools").resolve(
-                when {
-                    System.getProperty("os.name").startsWith("Windows") -> "windows"
-                    System.getProperty("os.name") == "Mac OS X" -> "macos"
-                    System.getProperty("os.name").startsWith("Linux") -> "linux"
-                    else -> error("Unsupported OS")
-                }
-            )
         }
     }
 }
@@ -80,12 +71,3 @@ tasks.register("packageAll") {
         }
     }
 }
-
-//val copyAdbToResources by tasks.registering(Copy::class) {
-//    from(layout.buildDirectory.dir("generated/moko-resources/desktopMain/res/files/adbmac"))
-//    into("src/desktopMain/resources/adbmac")
-//}
-//
-//tasks.named("desktopProcessResources") {
-//    dependsOn(copyAdbToResources)
-//}

@@ -31,6 +31,7 @@ import id.neotica.modernadb.adb.android.AdbInput
 import id.neotica.modernadb.presentation.components.ButtonBasic
 import id.neotica.modernadb.presentation.components.NeoIcon
 import id.neotica.modernadb.res.MR
+import id.neotica.modernadb.utils.device.SupportedDevice
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -40,11 +41,12 @@ fun ControlsView(
 ) {
     val scope = rememberCoroutineScope()
 
-    val deviceList = listOf("Pixel 6", "Pixel 3")
+    /** So, this is going to be where you put your own device if you want to contribute.**/
+    val deviceList = remember { SupportedDevice.entries.map { it.displayName } }
     var selectedDevice by remember { mutableStateOf(deviceList.first()) }
     var dropDownState by remember { mutableStateOf(false) }
 
-    val unlockMethods = listOf("Password", "Pin")
+    val unlockMethods = listOf("Pin", "Password")
     var selectedMethod by remember { mutableStateOf(unlockMethods.first()) }
     var unlockState by remember { mutableStateOf(false) }
     Card {
@@ -131,7 +133,7 @@ fun ControlsView(
 private fun unlock(password: String, device: String, method: String) {
 
     when (device) {
-        "Pixel 6" -> {
+        SupportedDevice.PIXEL_6.displayName -> {
             when (method) {
                 "Password" -> {}
                 "Pin" -> AdbInput.unlock(password)
@@ -154,6 +156,8 @@ fun DropdownBasic(
     expanded: Boolean,
     dropDownStateCallback: (String) -> Unit
 ) {
+    /** I realize that this is antipattern method when i hoist the state under the child composable,
+     * but well; its only used by one and only one use case; so be it. **/
     var dropDownState by remember { mutableStateOf(expanded) }
     var selectedDevice by remember { mutableStateOf(selectedItem) }
 

@@ -1,6 +1,5 @@
-package id.neotica.modernadb.utils
+package id.neotica.modernadb.utils.toast
 import androidx.compose.ui.awt.ComposeWindow
-import id.neotica.modernadb.utils.toast.ToastDurationType
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
 import javax.swing.*

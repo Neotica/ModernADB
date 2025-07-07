@@ -19,6 +19,7 @@ fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
         input == "sall" -> AdbInput.selectAll()
         input == "stab" -> AdbInput.shiftTab()
         input == "bs" -> AdbInput.backspaceButton()
+        input == "logcat" -> callback?.invoke(AdbInput.logCat())
         input == "fc" -> {
             AdbInput.forceClose()
         }

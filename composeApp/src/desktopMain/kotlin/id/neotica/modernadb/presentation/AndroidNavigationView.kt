@@ -54,7 +54,7 @@ fun AndroidNavigationView(
                     image = MR.images.nav_back,
                     size = 48.dp,
                     onClick = {
-                        scope.launch { idiomaticAdbInputs("back") }
+                        scope.launch(Dispatchers.IO) { idiomaticAdbInputs("back") }
                     }
                 )
                 NeoIcon(
@@ -62,7 +62,7 @@ fun AndroidNavigationView(
                     image = MR.images.nav_home,
                     size = 48.dp,
                     onClick = {
-                        scope.launch { idiomaticAdbInputs("home") }
+                        scope.launch(Dispatchers.IO) { idiomaticAdbInputs("home") }
                     }
                 )
                 NeoIcon(
@@ -70,7 +70,7 @@ fun AndroidNavigationView(
                     image = MR.images.nav_recent,
                     size = 48.dp,
                     onClick = {
-                        scope.launch { idiomaticAdbInputs("switch") }
+                        scope.launch(Dispatchers.IO) { idiomaticAdbInputs("switch") }
                     }
                 )
             }

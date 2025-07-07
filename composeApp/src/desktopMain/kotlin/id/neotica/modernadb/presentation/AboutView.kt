@@ -17,9 +17,8 @@ fun AboutView() {
     ) {
         Image(
             painter = painterResource(MR.images.ModernADB),
-            contentDescription = "",
+            contentDescription = "ModernADB Logo",
             modifier = Modifier.width(48.dp)
         )
-//        Text("ModernADB v0.3.1")
     }
 }

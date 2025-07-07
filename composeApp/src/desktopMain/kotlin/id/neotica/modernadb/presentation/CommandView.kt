@@ -40,6 +40,16 @@ fun CommandView(modifier: Modifier = Modifier) {
 
     val scope = rememberCoroutineScope()
 
+    fun writeInput() {
+        idiomaticAdbInputs(
+            when (currentMode) {
+                is InputMode.Command -> input
+                is InputMode.Write -> "w $input"
+            }
+        ){ eventMessages = it }
+        input = ""
+    }
+
     Card(
         modifier = modifier
     ){
@@ -86,26 +96,13 @@ fun CommandView(modifier: Modifier = Modifier) {
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                 keyboardActions = KeyboardActions {
                     scope.launch(Dispatchers.IO) {
-                        idiomaticAdbInputs(
-                            when (currentMode) {
-                                is InputMode.Command -> input
-                                is InputMode.Write -> "w $input"
-                            }
-                        ){ eventMessages = it }
-                        input = ""
-                        idiomaticAdbInputs("bs")
+                        writeInput()
                     }
                 },
                 modifier = Modifier.onKeyEvent { keyEvent ->
                     if (keyEvent.key == Key.Enter) {
                         scope.launch(Dispatchers.IO) {
-                            idiomaticAdbInputs(
-                                when (currentMode) {
-                                    is InputMode.Command -> input
-                                    is InputMode.Write -> "w $input"
-                                }
-                            ){ eventMessages = it }
-                            input = ""
+                            writeInput()
                         }
                         true
                     } else {

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import id.neotica.modernadb.adb.android.AdbInput
 import id.neotica.modernadb.presentation.components.NeoIcon
 import id.neotica.modernadb.res.MR
-import id.neotica.modernadb.utils.ToastManager
+import id.neotica.modernadb.utils.toast.ToastManager
 import id.neotica.modernadb.utils.toast.ToastDurationType
 
 @Composable
@@ -31,15 +31,20 @@ fun DeviceListView() {
         val deviceList = remember { mutableStateListOf<String>() }
         var selectedDevice by remember { mutableStateOf("") }
 
-        LaunchedEffect(Unit) {
+        fun grabDevice(deviceList: MutableList<String>) {
             deviceList.clear()
             val devices = AdbInput.getDeviceList()
-            if (devices.isEmpty()) {
+            deviceList.addAll(devices)
+            if (deviceList.isNotEmpty()) {
+                selectedDevice = deviceList.first()
+                AdbInput.selectedDevice = selectedDevice
+            } else {
                 ToastManager().showToast("Plug your device first!", ToastDurationType.SHORT)
             }
-            deviceList.addAll(devices)
-            selectedDevice = deviceList.first()
-            AdbInput.selectedDevice = selectedDevice
+        }
+
+        LaunchedEffect(Unit) {
+            grabDevice(deviceList)
         }
         Row(
             modifier = Modifier
@@ -85,12 +90,7 @@ fun DeviceListView() {
                     image = MR.images.ic_reload,
                     size = 24.dp,
                     onClick = {
-                        deviceList.clear()
-                        val devices = AdbInput.getDeviceList()
-                        if (devices.isEmpty()) {
-                            ToastManager().showToast("Plug your device first!", ToastDurationType.SHORT)
-                        }
-                        deviceList.addAll(devices)
+                        grabDevice(deviceList)
                     }
                 )
             }
