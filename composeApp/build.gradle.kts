@@ -5,14 +5,15 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.moko.resources)
 }
 
 kotlin {
     jvm("desktop")
-    
+
     sourceSets {
         val desktopMain by getting
-        
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -22,6 +23,11 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            api(libs.moko.resources)
+            api(libs.moko.resources.compose)
+        }
+        multiplatformResources {
+            resourcesPackage.set("id.neotica.modernadb.res")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -40,8 +46,13 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm)
-            packageName = "id.neotica.modernadb"
+            packageName = "ModernADB"
             packageVersion = "1.0.0"
+
+            macOS {
+                val generatedIcon = layout.buildDirectory.file("generated/moko-resources/desktopMain/res/files/ModernADB.icns")
+                iconFile.set(generatedIcon)
+            }
         }
     }
 }

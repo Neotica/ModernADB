@@ -6,67 +6,83 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import id.neotica.modernadb.adb.idiomaticAdbInputs
-import id.neotica.modernadb.presentation.components.ButtonBasic
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun MainView() {
     val listState = rememberLazyListState()
 
-    BoxWithConstraints {
-        val isWideScreen = maxWidth > 600.dp
-
+    BoxWithConstraints(
+        Modifier.fillMaxWidth()
+    ) {
         LazyColumn(
             state = listState,
-            contentPadding = PaddingValues(16.dp)
+            contentPadding = PaddingValues(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
         ) {
             item {
-                var eventMessages by remember { mutableStateOf("") }
-                val scope = rememberCoroutineScope()
-
-                LaunchedEffect(Unit) {
-                    idiomaticAdbInputs("devices") { eventMessages = it }
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    DeviceListView()
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(eventMessages)
-                    ButtonBasic("Reload") {
-                        scope.launch(Dispatchers.IO) {
-                            idiomaticAdbInputs("devices") { eventMessages = it }
+                Spacer(Modifier.padding(8.dp))
+
+                when {
+                    maxWidth < 550.dp -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CommandView()
+                            AndroidNavigationView()
+                            ControlsView()
                         }
                     }
-                }
-
-                if (isWideScreen) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        CommandView()
-                        ControlsView()
+                    maxWidth < 840.dp -> {
+                        // Show layout for Medium screens
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                CommandView()
+                                Spacer(Modifier.padding(8.dp))
+                                AndroidNavigationView()
+                            }
+                            Spacer(Modifier.padding(8.dp))
+                            ControlsView()
+                        }
                     }
-                } else {
-                    Column(Modifier.fillMaxSize()) {
-                        CommandView()
-                        ControlsView()
+                    else -> {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            CommandView()
+                            AndroidNavigationView()
+                            ControlsView()
+                        }
                     }
                 }
             }

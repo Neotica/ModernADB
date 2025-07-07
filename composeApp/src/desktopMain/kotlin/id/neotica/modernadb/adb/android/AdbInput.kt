@@ -1,91 +1,155 @@
 package id.neotica.modernadb.adb.android
 
+import java.io.File
+import java.util.concurrent.TimeUnit
+
 object AdbInput {
+    var selectedDevice: String? = null
 
-    fun deviceList() = exec("adb devices")
-    fun powerButton() = exec("adb shell input keyevent 26")
-    fun isAwake(): Boolean {
-        val output = exec("adb shell dumpsys power | grep \"mWakefulness=\"").inputStream.bufferedReader().readText()
-        print(output)
-        return output.contains("mWakefulness=Awake")
+    private val adbExecutablePath: String by lazy {
+        val sdkDirs = listOfNotNull(
+            System.getenv("ANDROID_SDK_ROOT"),
+            System.getenv("ANDROID_HOME"),
+            "${System.getProperty("user.home")}/Library/Android/sdk",
+            "/usr/local/share/android-sdk",
+            "/opt/android-sdk",
+        )
+
+        val found = sdkDirs
+            .map { File(it, "platform-tools/adb") }
+            .firstOrNull { it.exists() }
+
+        found?.absolutePath ?: error("ADB not found in common locations. Please install Android SDK.")
     }
-    fun unlock(password: String) {
-        val maxAttempts = 3
-        var currentAttempt = 0
 
-        while (currentAttempt < maxAttempts) {
-            val output = exec("adb shell dumpsys power | grep \"mWakefulness=\"").inputStream.bufferedReader().readText()
+    private fun exec(command: String, waitAfter: Long = 100): Process {
+        val commandParts = mutableListOf<String>()
+        commandParts.add(adbExecutablePath) // Always start with the full path to adb
 
-            print("output: $output")
-            if (output.contains( "mWakefulness=Awake")) {
-                println("Screen is ON.")
-                exec("adb shell input swipe 500 1000 500 500 200")
-                exec("adb shell input text \"$password\"")
-                break // Exit the loop
-            } else {
-                println("Screen is OFF. Sending wakeup command (Attempt ${currentAttempt + 1})...")
-                exec("adb shell input keyevent KEYCODE_WAKEUP")
-                // Wait a moment for the device to respond before checking again
-                Thread.sleep(500) // 0.5 seconds
+        selectedDevice?.let { deviceId ->
+            if (command != "devices") {
+                commandParts.add("-s")
+                commandParts.add(deviceId)
             }
-            currentAttempt++
+        }
+
+        // Add the the command parts
+        commandParts.addAll(command.split(" "))
+
+        println("DEBUG: Executing command parts: $commandParts")
+
+        val processBuilder = ProcessBuilder(commandParts)
+
+        val environment = processBuilder.environment()
+        val userHome = System.getProperty("user.home")
+        environment["HOME"] = userHome
+        environment["ANDROID_SDK_HOME"] = "$userHome/.android"
+
+        val process = processBuilder.redirectErrorStream(true).start()
+
+        val finished = process.waitFor(5, TimeUnit.SECONDS)
+        if (!finished) {
+            println("DEBUG: Process timed out. Forcibly destroying.")
+            process.destroyForcibly()
+        }
+
+        Thread.sleep(waitAfter)
+        return process
+    }
+
+    // --- ADB Public Methods ---
+
+    fun getDevices(): String {
+        return try {
+            val process = exec("devices")
+            process.inputStream.bufferedReader().readText()
+        } catch (e: Exception) {
+            val errorMsg = "ERROR reading deviceList stream: ${e.message}"
+            println(errorMsg)
+            errorMsg
+        }
+    }
+
+    fun getDeviceList(): List<String> {
+        return try {
+            val rawOutput = getDevices()
+            rawOutput.lines().drop(1).mapNotNull {
+                val serial = it.split('\t').firstOrNull()
+                serial?.takeIf { s -> s.isNotBlank() }
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    //power
+    fun powerButton() = exec("shell input keyevent 26")
+    fun longPressPowerButton() = exec("shell input keyevent --longpress 26")
+    fun shutdownLegacy() = exec("shell shutdown")
+    fun shutdown() = exec("reboot -p")
+    fun reboot() = exec("reboot")
+    fun rebootRecovery() = exec("reboot recovery")
+    fun rebootBootloader() = exec("reboot bootloader")
+
+    fun isAwake(): Boolean {
+        return try {
+            val output = exec("shell dumpsys power | grep \"mWakefulness=\"").inputStream.bufferedReader().readText()
+            output.contains("Awake")
+        } catch (e: Exception) {
+            println("ERROR reading isAwake stream: ${e.message}")
+            false
+        }
+    }
+
+    fun unlock(password: String) {
+        if (isAwake()) {
+            println("Screen is ON.")
+            exec("shell input swipe 500 1000 500 500 200")
+            exec("shell input text \"$password\"")
+        } else {
+            println("Screen is OFF. Sending wakeup command...")
+            exec("shell input keyevent KEYCODE_WAKEUP")
+            Thread.sleep(500)
+            unlock(password) //recursive calls, edit later to have attempts.
         }
     }
 
     fun sendText(message: String) {
         val formatted = formatMessage(message)
-        exec("adb shell input text \"$formatted\"")
+        exec("shell input text \"$formatted\"")
     }
 
-    fun sendEnter() {
-        exec("adb shell input keyevent KEYCODE_ENTER")
+    fun sendEnter() = exec("shell input keyevent KEYCODE_ENTER")
+    fun sendKey(keyCode: Int) = exec("shell input keyevent $keyCode")
+    fun logCat(): String {
+        val read = exec("shell logcat").inputStream.bufferedReader().readText()
+        println("logcat $read")
+        return read
     }
-
-    fun sendKey(keyCode: Int) {
-        exec("adb shell input keyevent $keyCode")
+    fun homeButton() = exec("shell am start -W -c android.intent.category.HOME -a android.intent.action.MAIN")
+    fun backButton() = exec("shell input keyevent KEYCODE_BACK")
+    fun recentButton() = exec("shell am start -n com.android.systemui/com.android.systemui.recents.RecentsActivity")
+    fun switchApp() = exec("shell input keyevent KEYCODE_APP_SWITCH")
+    fun nextButton() = exec("shell input keyevent 22")
+    fun prevButton() = exec("shell input keyevent 21")
+    fun upButton() = exec("shell input keyevent 19")
+    fun downButton() = exec("shell input keyevent 20")
+    fun backspaceButton() = exec("shell input keyevent 67")
+    fun tabButton() = exec("shell input keyevent 61")
+    fun selectAll() = exec("shell input keycombination 113 29")
+    fun shiftTab() = exec("shell input keycombination 59 61")
+    fun touchInput(x: Int, y: Int) = exec("shell input tap $x $y")
+    fun forceClose() {
+        switchApp()
+        holdInputTime(500, 1000, endY = 100, time = 100)
     }
-
-    fun logCat() {
-        exec("adb shell logcat")
-    }
-
-    fun homeButton() {
-        exec("adb shell am start -W -c android.intent.category.HOME -a android.intent.action.MAIN")
-    }
-
-    fun backButton() = exec("adb shell input keyevent KEYCODE_BACK" )
-
-    fun recentButton() {
-        exec("adb shell am start -n com.android.systemui/com.android.systemui.recents.RecentsActivity")
-    }
-
-    fun switchApp() = exec("adb shell input keyevent KEYCODE_APP_SWITCH")
-
-    fun nextButton() = exec("adb shell input keyevent 22")
-    fun prevButton() = exec("adb shell input keyevent 21")
-    fun upButton() = exec("adb shell input keyevent 19")
-    fun downButton() = exec("adb shell input keyevent 20")
-
-    fun backspaceButton() = exec("adb shell input keyevent 67")
-    fun tabButton() = exec("adb shell input keyevent 61")
-    fun selectAll() = exec("adb shell input keycombination 113 29")
-    fun shiftTab() = exec("adb shell input keycombination 59 61")
-
-    fun touchInput(x: Int, y: Int) = exec("adb shell input tap $x $y")
+    fun swipeUp() = holdInputTime(500, 2000, 500, 500, 100)
+    fun swipeDown() = holdInputTime(500, 500, 500, 2000, 100)
     fun holdInputTime(
-        startX: Int, startY: Int, endX: Int? = startX, endY: Int? = startY, time: Int?= 500
-    ) = exec("adb shell input swipe $startX $startY $endX $endY $time")
+        startX: Int, startY: Int, endX: Int? = startX, endY: Int? = startY, time: Int? = 500
+    ) = exec("shell input swipe $startX $startY $endX $endY $time")
 
-    fun activityManager() {
-        exec("adb shell am start -a android.intent.action.VIEW")
-    }
-
-    private fun exec(cmd: String, waitAfter: Long = 100): Process {
-        val process = Runtime.getRuntime().exec(cmd)
-        process.waitFor()
-        Thread.sleep(waitAfter) // let input flush to UI
-        return process
-    }
+    fun activityManager() = exec("shell am start -a android.intent.action.VIEW")
 
     private fun formatMessage(input: String): String {
         return input.replace(" ", "%s")

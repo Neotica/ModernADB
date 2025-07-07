@@ -19,9 +19,9 @@ fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
         input == "sall" -> AdbInput.selectAll()
         input == "stab" -> AdbInput.shiftTab()
         input == "bs" -> AdbInput.backspaceButton()
+        input == "logcat" -> callback?.invoke(AdbInput.logCat())
         input == "fc" -> {
-            AdbInput.switchApp()
-            AdbInput.holdInputTime(500 , 1000, endY = 100, time = 100)
+            AdbInput.forceClose()
         }
         input == "isAwake" -> {
             val awake = AdbInput.isAwake()
@@ -29,17 +29,17 @@ fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
         }
         input == "power" -> AdbInput.powerButton()
         input == "devices" -> {
-            val output = AdbInput.deviceList().inputStream.bufferedReader().readText()
+            val output = AdbInput.getDevices()//.inputStream.bufferedReader().readText()
             callback?.invoke(output)
         }
         input.startsWith("midtap") -> {
             AdbInput.touchInput(600,1200)
         }
         input.startsWith("sdown") -> {
-            AdbInput.holdInputTime(500 , 2000, endY = 500, time = 100)
+            AdbInput.swipeDown()
         }
         input.startsWith("sup") -> {
-            AdbInput.holdInputTime(500 , 500, endY = 2000, time = 100)
+            AdbInput.swipeUp()
         }
         input.startsWith("sright") -> {
             AdbInput.holdInputTime(100 , 1000, endX = 1000, time = 100)
@@ -115,8 +115,6 @@ fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
 
             AdbInput.sendText(writeInput)
             Thread.sleep(200)
-            AdbInput.sendEnter()
-            Thread.sleep(300)
             callback?.invoke("")
         }
         else -> {
