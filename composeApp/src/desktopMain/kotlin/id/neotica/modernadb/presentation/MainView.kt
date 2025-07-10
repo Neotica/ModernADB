@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import id.neotica.modernadb.presentation.components.FileDropTarget
 
 @Composable
 fun MainView() {
@@ -50,9 +51,8 @@ fun MainView() {
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            CommandView()
-                            AndroidNavigationView()
-                            ControlsView()
+                            FirstTab()
+                            SecondTab()
                         }
                     }
                     maxWidth < 840.dp -> {
@@ -62,15 +62,9 @@ fun MainView() {
                                 .fillMaxSize(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                CommandView()
-                                Spacer(Modifier.padding(8.dp))
-                                AndroidNavigationView()
-                            }
+                            FirstTab()
                             Spacer(Modifier.padding(8.dp))
-                            ControlsView()
+                            SecondTab()
                         }
                     }
                     else -> {
@@ -81,7 +75,7 @@ fun MainView() {
                         ) {
                             CommandView()
                             AndroidNavigationView()
-                            ControlsView()
+                            SecondTab()
                         }
                     }
                 }
@@ -94,5 +88,27 @@ fun MainView() {
                 scrollState = listState
             )
         )
+    }
+}
+
+@Composable
+private fun FirstTab() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CommandView()
+        Spacer(Modifier.padding(8.dp))
+        AndroidNavigationView()
+    }
+}
+
+@Composable
+private fun SecondTab() {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ControlsView()
+        Spacer(Modifier.padding(8.dp))
+        FileDropTarget()
     }
 }

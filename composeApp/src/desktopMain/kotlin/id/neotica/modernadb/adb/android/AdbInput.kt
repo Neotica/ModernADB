@@ -151,6 +151,9 @@ object AdbInput {
 
     fun activityManager() = exec("shell am start -a android.intent.action.VIEW")
 
+    //apk install
+    fun install(apk: String) = exec("install \"$apk\"")
+
     private fun formatMessage(input: String): String {
         return input.replace(" ", "%s")
             .replace("&", "\\&")
