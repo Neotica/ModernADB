@@ -1,4 +1,4 @@
-package id.neotica.modernadb.adb.android
+package id.neotica.modernadb.data.adb.android
 
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -34,7 +34,15 @@ object AdbInput {
         }
 
         // Add the the command parts
-        commandParts.addAll(command.split(" "))
+        if (command.startsWith("install ")) {
+            // Split the command into only two parts: "install" and the file path.
+            // The 'limit = 2' is crucial as it stops splitting after the first space.
+            val parts = command.split(" ", limit = 2)
+            commandParts.addAll(parts)
+        } else {
+            // Keep the original logic for all other commands.
+            commandParts.addAll(command.split(" "))
+        }
 
         println("DEBUG: Executing command parts: $commandParts")
 
@@ -151,8 +159,20 @@ object AdbInput {
 
     fun activityManager() = exec("shell am start -a android.intent.action.VIEW")
 
+    //adb connect wifi adb
+    fun connectWireless(port: String): String {
+        val connect = exec("connect $port")
+        return connect.inputStream.bufferedReader().readText()
+    }
+
     //apk install
-    fun install(apk: String) = exec("install \"$apk\"")
+    fun install(apk: String): String {
+        val install = exec("install $apk")
+//        val install = exec("install")
+        println("✨ install $install")
+        println("✨ apk $apk")
+        return install.inputStream.bufferedReader().readText()
+    }
 
     private fun formatMessage(input: String): String {
         return input.replace(" ", "%s")

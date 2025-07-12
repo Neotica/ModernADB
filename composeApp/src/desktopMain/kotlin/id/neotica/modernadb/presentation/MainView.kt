@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import id.neotica.modernadb.presentation.components.FileDropTarget
+import id.neotica.modernadb.presentation.filedrop.FileDropTarget
 
 @Composable
 fun MainView() {
