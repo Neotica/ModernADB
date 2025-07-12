@@ -38,18 +38,8 @@ class FileDropTargetViewModel: ViewModel() {
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) { AdbInput.install(apk) }
 
-            when (result) {
-                "Success" -> {
-                    _filePath.value = ""
-                    _isLoading.value = false
-                }
-
-                else -> {
-                    _filePath.value = ""
-                    _isLoading.value = false
-                }
-
-            }
+            filePath.value = ""
+            _isLoading.value = false
             _installStatus.value = result
         }
 

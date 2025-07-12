@@ -67,7 +67,7 @@ fun FileDropTarget() {
                     else
                         it.transferDataFlavors.first().humanPresentableName
                 }
-                if (event.toString().contains(".apk")) {
+                if (event.toString().endsWith(".apk", ignoreCase = true)) {
                     viewModel.setPath(event.toString())
                 } else {
                     ToastManager().showToast("Not an APK file", ToastDurationType.SHORT)

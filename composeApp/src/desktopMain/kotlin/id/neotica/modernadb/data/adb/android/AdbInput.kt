@@ -168,9 +168,6 @@ object AdbInput {
     //apk install
     fun install(apk: String): String {
         val install = exec("install $apk")
-//        val install = exec("install")
-        println("✨ install $install")
-        println("✨ apk $apk")
         return install.inputStream.bufferedReader().readText()
     }
 
