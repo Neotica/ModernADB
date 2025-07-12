@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Switch
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,14 +17,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.InternalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import id.neotica.modernadb.adb.android.AdbInput
-import id.neotica.modernadb.adb.idiomaticAdbInputs
+import id.neotica.modernadb.data.adb.android.AdbInput
+import id.neotica.modernadb.data.adb.idiomaticAdbInputs
 import id.neotica.modernadb.presentation.components.ButtonBasic
+import id.neotica.modernadb.presentation.components.NeoCard
 import id.neotica.modernadb.presentation.components.NeoIcon
+import id.neotica.modernadb.presentation.components.NeoSwitchColor
+import id.neotica.modernadb.presentation.theme.DarkPrimary
+import id.neotica.modernadb.presentation.theme.DarkPrimaryTransparent2
 import id.neotica.modernadb.res.MR
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,8 +40,8 @@ fun AndroidNavigationView(
 
     val scope = rememberCoroutineScope()
 
-    Card(
-        Modifier.padding(horizontal = 16.dp)
+    NeoCard (
+        modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         Column(
             modifier = Modifier
@@ -79,7 +81,7 @@ fun AndroidNavigationView(
                     text = "collapse!",
                     textAlign = TextAlign.End,
                     textDecoration = TextDecoration.Underline,
-                    color = Color.Blue,
+                    color = DarkPrimary,
                     modifier = Modifier
                         .clickable { expanded = !expanded }
                 )
@@ -91,9 +93,10 @@ fun AndroidNavigationView(
                 ) {
                     Text(
                         text = "keys",
-                        color = if (currentMode == ControlMode.Keys) Color.Black else Color.Gray
+                        color = if (currentMode == ControlMode.Keys) DarkPrimary else DarkPrimaryTransparent2
                     )
                     Switch(
+                        colors = NeoSwitchColor(),
                         // The switch is "on" (checked) if the mode is Write.
                         checked = currentMode == ControlMode.Swipe,
                         // When the switch is toggled, update the state to the corresponding mode.
@@ -103,7 +106,7 @@ fun AndroidNavigationView(
                     )
                     Text(
                         text = "swipe",
-                        color = if (currentMode == ControlMode.Swipe) Color.Black else Color.Gray
+                        color = if (currentMode == ControlMode.Swipe) DarkPrimary else DarkPrimaryTransparent2
                     )
                 }
 
@@ -118,7 +121,7 @@ fun AndroidNavigationView(
                     text = "expand...",
                     textAlign = TextAlign.End,
                     textDecoration = TextDecoration.Underline,
-                    color = Color.Blue,
+                    color = DarkPrimary,
                     modifier = Modifier
                         .clickable { expanded = !expanded }
                 )

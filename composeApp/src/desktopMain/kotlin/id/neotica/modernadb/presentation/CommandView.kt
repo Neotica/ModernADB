@@ -11,7 +11,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Switch
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -28,7 +27,11 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import id.neotica.modernadb.adb.idiomaticAdbInputs
+import id.neotica.modernadb.data.adb.idiomaticAdbInputs
+import id.neotica.modernadb.presentation.components.NeoCard
+import id.neotica.modernadb.presentation.components.NeoSwitchColor
+import id.neotica.modernadb.presentation.components.NeoText
+import id.neotica.modernadb.presentation.components.NeoTextFieldColor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -50,7 +53,7 @@ fun CommandView(modifier: Modifier = Modifier) {
         input = ""
     }
 
-    Card(
+    NeoCard(
         modifier = modifier
     ){
         Column(
@@ -66,16 +69,18 @@ fun CommandView(modifier: Modifier = Modifier) {
                     checked = currentMode == InputMode.Write,
                     onCheckedChange = { isChecked ->
                         currentMode = if (isChecked) InputMode.Write else InputMode.Command
-                    }
+                    },
+                    colors = NeoSwitchColor()
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                Text(
+                NeoText(
                     text = "Mode: ${currentMode.input}",
                 )
             }
             TextField(
+                colors = NeoTextFieldColor(),
                 value = input,
                 onValueChange = {
                     if (!it.contains('\n')) {
@@ -99,7 +104,8 @@ fun CommandView(modifier: Modifier = Modifier) {
                         writeInput()
                     }
                 },
-                modifier = Modifier.onKeyEvent { keyEvent ->
+                modifier = Modifier
+                    .onKeyEvent { keyEvent ->
                     if (keyEvent.key == Key.Enter) {
                         scope.launch(Dispatchers.IO) {
                             writeInput()

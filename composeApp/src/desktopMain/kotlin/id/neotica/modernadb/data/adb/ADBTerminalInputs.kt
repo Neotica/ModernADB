@@ -1,6 +1,6 @@
-package id.neotica.modernadb.adb
+package id.neotica.modernadb.data.adb
 
-import id.neotica.modernadb.adb.android.AdbInput
+import id.neotica.modernadb.data.adb.android.AdbInput
 
 fun idiomaticAdbInputs(input: String, callback: ((String) -> Unit)? = null) {
     when {
