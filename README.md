@@ -6,7 +6,7 @@
 
 This project provides a comprehensive and user-friendly interface to streamline your Android development and debugging workflow.
 
-<img src="https://github.com/user-attachments/assets/31cccda8-2783-4522-9e28-a28300f3b1b9" width="50%" alt="ModernADB Screenshot">
+<img src="https://github.com/user-attachments/assets/dd75842f-3df7-4eee-81c9-9b42d37f15af" width="50%" alt="ModernADB Screenshot">
 
 ## ✨ Key Features
 
@@ -15,9 +15,9 @@ This project provides a comprehensive and user-friendly interface to streamline 
 - **Device Management:** View a list of connected devices and select a target for your commands.
 - **Text & Command Input:** A dedicated input field to send text or custom ADB shell commands directly to your device.
 - **Adaptive UI:** The layout adjusts gracefully for different window sizes.
+- **APK Installer:** Install APK directly across devices.
 
 Planned:
-*   **Device Management:** Easily manage multiple connected devices and emulators. [planned]
 *   **File System Navigation:** Browse and manage files on your Android device with ease. [planned]
 *   **Logcat Viewer:** Advanced logcat filtering and viewing capabilities. [planned]
 *   **Screenshot & Screen Recording:** Capture screenshots and record screen activity effortlessly. [planned]
