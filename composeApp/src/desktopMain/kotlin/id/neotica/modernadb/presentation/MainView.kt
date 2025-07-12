@@ -108,7 +108,7 @@ private fun SecondTab() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ControlsView()
-        Spacer(Modifier.padding(8.dp))
+//        Spacer(Modifier.padding(8.dp))
         FileDropTarget()
     }
 }
