@@ -6,14 +6,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import dev.icerock.moko.resources.compose.painterResource
 import id.neotica.modernadb.presentation.theme.DarkBackground
+import id.neotica.modernadb.res.MR
 
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = "ModernADB",
-//        transparent = true,
-//        undecorated = true
+        icon = painterResource(MR.images.ModernADB)
     ) {
         Box(
             Modifier.fillMaxSize()

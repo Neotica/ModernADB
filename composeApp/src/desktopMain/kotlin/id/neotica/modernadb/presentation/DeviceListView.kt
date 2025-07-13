@@ -29,6 +29,7 @@ import id.neotica.modernadb.presentation.components.NeoCardSolid
 import id.neotica.modernadb.presentation.components.NeoIcon
 import id.neotica.modernadb.presentation.components.NeoText
 import id.neotica.modernadb.presentation.components.NeoTextFieldColor
+import id.neotica.modernadb.presentation.components.NeoToolTip
 import id.neotica.modernadb.presentation.theme.DarkPrimary
 import id.neotica.modernadb.res.MR
 import id.neotica.modernadb.utils.toast.ToastDurationType
@@ -93,7 +94,6 @@ fun DeviceListView() {
                                     )
                                 }
                             }
-
                         }
                     }
 
@@ -110,6 +110,8 @@ fun DeviceListView() {
             }
             var expanded by remember { mutableStateOf(false) }
             var port by remember { mutableStateOf("") }
+            var packageName by remember { mutableStateOf("") }
+            var outputStatus by remember { mutableStateOf("") }
             Text(
                 text = "···",
                 modifier = Modifier
@@ -143,12 +145,51 @@ fun DeviceListView() {
                     ButtonBasic("Connect") {
                         val connect = AdbInput.connectWireless(port)
                         println("✨ $connect")
+                        outputStatus = connect
                     }
+
+                    NeoText(
+                        text = "Open app using package"
+                    )
+                    TextField(
+                        colors = NeoTextFieldColor(),
+                        value = packageName,
+                        label = { NeoText("Package Name") },
+                        onValueChange = {
+                            if (!it.contains('\n')) {
+                                packageName = it
+                            }
+                        },
+                    )
+                    var activityName by remember { mutableStateOf("") }
+                    TextField(
+                        colors = NeoTextFieldColor(),
+                        value = activityName,
+                        label = { NeoText("Activity Name") },
+                        onValueChange = {
+                            if (!it.contains('\n')) {
+                                activityName = it
+                            }
+                        },
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        ButtonBasic("Open") {
+                            val open = AdbInput.openApp(packageName, activityName)
+                            println("✨ $open")
+                            outputStatus = open
+                        }
+                        NeoToolTip("Currently Only Working on Android 14 and up that use swipe navigation.\n Only kill current screen because its using manual swipe.") {
+                            ButtonBasic("Kill") {
+                                AdbInput.forceClose()
+                            }
+                        }
+
+                    }
+                    NeoText("output: $outputStatus")
                 }
             }
-
-
         }
-
     }
 }

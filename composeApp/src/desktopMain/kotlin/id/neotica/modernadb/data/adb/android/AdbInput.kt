@@ -4,6 +4,8 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 object AdbInput {
+
+    // --- ADB Configuration ---
     var selectedDevice: String? = null
 
     private val adbExecutablePath: String by lazy {
@@ -22,51 +24,7 @@ object AdbInput {
         found?.absolutePath ?: error("ADB not found in common locations. Please install Android SDK.")
     }
 
-    private fun exec(command: String, waitAfter: Long = 100): Process {
-        val commandParts = mutableListOf<String>()
-        commandParts.add(adbExecutablePath) // Always start with the full path to adb
-
-        selectedDevice?.let { deviceId ->
-            if (command != "devices") {
-                commandParts.add("-s")
-                commandParts.add(deviceId)
-            }
-        }
-
-        // Add the the command parts
-        if (command.startsWith("install ")) {
-            // Split the command into only two parts: "install" and the file path.
-            // The 'limit = 2' is crucial as it stops splitting after the first space.
-            val parts = command.split(" ", limit = 2)
-            commandParts.addAll(parts)
-        } else {
-            // Keep the original logic for all other commands.
-            commandParts.addAll(command.split(" "))
-        }
-
-        println("DEBUG: Executing command parts: $commandParts")
-
-        val processBuilder = ProcessBuilder(commandParts)
-
-        val environment = processBuilder.environment()
-        val userHome = System.getProperty("user.home")
-        environment["HOME"] = userHome
-        environment["ANDROID_SDK_HOME"] = "$userHome/.android"
-
-        val process = processBuilder.redirectErrorStream(true).start()
-
-        val finished = process.waitFor(5, TimeUnit.SECONDS)
-        if (!finished) {
-            println("DEBUG: Process timed out. Forcibly destroying.")
-            process.destroyForcibly()
-        }
-
-        Thread.sleep(waitAfter)
-        return process
-    }
-
-    // --- ADB Public Methods ---
-
+    // --- Device Management ---
     fun getDevices(): String {
         return try {
             val process = exec("devices")
@@ -90,7 +48,12 @@ object AdbInput {
         }
     }
 
-    //power
+    fun connectWireless(port: String): String {
+        val connect = exec("connect $port")
+        return connect.inputStream.bufferedReader().readText()
+    }
+
+    // --- Power & Boot Commands ---
     fun powerButton() = exec("shell input keyevent 26")
     fun longPressPowerButton() = exec("shell input keyevent --longpress 26")
     fun shutdownLegacy() = exec("shell shutdown")
@@ -101,7 +64,8 @@ object AdbInput {
 
     fun isAwake(): Boolean {
         return try {
-            val output = exec("shell dumpsys power | grep \"mWakefulness=\"").inputStream.bufferedReader().readText()
+            val output = exec("shell dumpsys power | grep \"mWakefulness=\"")
+                .inputStream.bufferedReader().readText()
             output.contains("Awake")
         } catch (e: Exception) {
             println("ERROR reading isAwake stream: ${e.message}")
@@ -118,10 +82,11 @@ object AdbInput {
             println("Screen is OFF. Sending wakeup command...")
             exec("shell input keyevent KEYCODE_WAKEUP")
             Thread.sleep(500)
-            unlock(password) //recursive calls, edit later to have attempts.
+            unlock(password) // recursive call (can be improved later)
         }
     }
 
+    // --- Text Input ---
     fun sendText(message: String) {
         val formatted = formatMessage(message)
         exec("shell input text \"$formatted\"")
@@ -129,46 +94,105 @@ object AdbInput {
 
     fun sendEnter() = exec("shell input keyevent KEYCODE_ENTER")
     fun sendKey(keyCode: Int) = exec("shell input keyevent $keyCode")
+
+    // --- Navigation / System UI ---
+    fun homeButton() = exec("shell am start -W -c android.intent.category.HOME -a android.intent.action.MAIN")
+    fun backButton() = exec("shell input keyevent KEYCODE_BACK")
+    fun recentButton() = exec("shell am start -n com.android.systemui/com.android.systemui.recents.RecentsActivity")
+    fun switchApp() = exec("shell input keyevent KEYCODE_APP_SWITCH")
+
+    fun nextButton() = exec("shell input keyevent 22")
+    fun prevButton() = exec("shell input keyevent 21")
+    fun upButton() = exec("shell input keyevent 19")
+    fun downButton() = exec("shell input keyevent 20")
+
+    fun backspaceButton() = exec("shell input keyevent 67")
+    fun tabButton() = exec("shell input keyevent 61")
+    fun shiftTab() = exec("shell input keycombination 59 61")
+    fun selectAll() = exec("shell input keycombination 113 29")
+
+    fun touchInput(x: Int, y: Int) = exec("shell input tap $x $y")
+
+    fun holdInputTime(
+        startX: Int,
+        startY: Int,
+        endX: Int? = startX,
+        endY: Int? = startY,
+        time: Int? = 500
+    ) = exec("shell input swipe $startX $startY $endX $endY $time")
+
+    fun swipeUp() = holdInputTime(500, 2000, 500, 500, 100)
+    fun swipeDown() = holdInputTime(500, 500, 500, 2000, 100)
+
+    // --- APK / App Management ---
+    fun install(apk: String): String {
+        val install = exec("install $apk")
+        return install.inputStream.bufferedReader().readText()
+    }
+
+    fun openApp(packageName: String, activityName: String = ""): String {
+        val cmd = if (activityName.isNotEmpty()) {
+            "shell am start -n $packageName/.$activityName"
+        } else {
+            "shell am start $packageName"
+        }
+
+        val open = exec(cmd)
+        return open.inputStream.bufferedReader().readText()
+    }
+
+    fun forceClose() {
+        switchApp()
+        holdInputTime(500, 1000, endY = 100, time = 100)
+    }
+
+    fun activityManager() = exec("shell am start -a android.intent.action.VIEW")
+
+    // --- Logcat ---
     fun logCat(): String {
         val read = exec("shell logcat").inputStream.bufferedReader().readText()
         println("logcat $read")
         return read
     }
-    fun homeButton() = exec("shell am start -W -c android.intent.category.HOME -a android.intent.action.MAIN")
-    fun backButton() = exec("shell input keyevent KEYCODE_BACK")
-    fun recentButton() = exec("shell am start -n com.android.systemui/com.android.systemui.recents.RecentsActivity")
-    fun switchApp() = exec("shell input keyevent KEYCODE_APP_SWITCH")
-    fun nextButton() = exec("shell input keyevent 22")
-    fun prevButton() = exec("shell input keyevent 21")
-    fun upButton() = exec("shell input keyevent 19")
-    fun downButton() = exec("shell input keyevent 20")
-    fun backspaceButton() = exec("shell input keyevent 67")
-    fun tabButton() = exec("shell input keyevent 61")
-    fun selectAll() = exec("shell input keycombination 113 29")
-    fun shiftTab() = exec("shell input keycombination 59 61")
-    fun touchInput(x: Int, y: Int) = exec("shell input tap $x $y")
-    fun forceClose() {
-        switchApp()
-        holdInputTime(500, 1000, endY = 100, time = 100)
-    }
-    fun swipeUp() = holdInputTime(500, 2000, 500, 500, 100)
-    fun swipeDown() = holdInputTime(500, 500, 500, 2000, 100)
-    fun holdInputTime(
-        startX: Int, startY: Int, endX: Int? = startX, endY: Int? = startY, time: Int? = 500
-    ) = exec("shell input swipe $startX $startY $endX $endY $time")
 
-    fun activityManager() = exec("shell am start -a android.intent.action.VIEW")
+    // --- Private Helpers ---
+    private fun exec(command: String, waitAfter: Long = 100): Process {
+        val commandParts = mutableListOf<String>()
+        commandParts.add(adbExecutablePath)
 
-    //adb connect wifi adb
-    fun connectWireless(port: String): String {
-        val connect = exec("connect $port")
-        return connect.inputStream.bufferedReader().readText()
-    }
+        selectedDevice?.let { deviceId ->
+            if (command != "devices") {
+                commandParts.add("-s")
+                commandParts.add(deviceId)
+            }
+        }
 
-    //apk install
-    fun install(apk: String): String {
-        val install = exec("install $apk")
-        return install.inputStream.bufferedReader().readText()
+        if (command.startsWith("install ")) {
+            val parts = command.split(" ", limit = 2)
+            commandParts.addAll(parts)
+        } else {
+            commandParts.addAll(command.split(" "))
+        }
+
+        println("DEBUG: Executing command parts: $commandParts")
+
+        val processBuilder = ProcessBuilder(commandParts)
+
+        val environment = processBuilder.environment()
+        val userHome = System.getProperty("user.home")
+        environment["HOME"] = userHome
+        environment["ANDROID_SDK_HOME"] = "$userHome/.android"
+
+        val process = processBuilder.redirectErrorStream(true).start()
+        val finished = process.waitFor(5, TimeUnit.SECONDS)
+
+        if (!finished) {
+            println("DEBUG: Process timed out. Forcibly destroying.")
+            process.destroyForcibly()
+        }
+
+        Thread.sleep(waitAfter)
+        return process
     }
 
     private fun formatMessage(input: String): String {
