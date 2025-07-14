@@ -142,11 +142,21 @@ fun DeviceListView() {
                             }
                         },
                     )
-                    ButtonBasic("Connect") {
-                        val connect = AdbInput.connectWireless(port)
-                        println("✨ $connect")
-                        outputStatus = connect
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        ButtonBasic("Connect") {
+                            val connect = AdbInput.connectWireless(port)
+                            println("✨ $connect")
+                            outputStatus = connect
+                        }
+                        ButtonBasic("Pair watch") {
+                            val connect = AdbInput.pairWatch(port)
+                            println("✨ $connect")
+                            outputStatus = connect
+                        }
                     }
+
 
                     NeoText(
                         text = "Open app using package"

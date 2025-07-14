@@ -53,6 +53,11 @@ object AdbInput {
         return connect.inputStream.bufferedReader().readText()
     }
 
+    fun pairWatch(port: String): String {
+        val pair = exec("pair $port")
+        return pair.inputStream.bufferedReader().readText()
+    }
+
     // --- Power & Boot Commands ---
     fun powerButton() = exec("shell input keyevent 26")
     fun longPressPowerButton() = exec("shell input keyevent --longpress 26")
