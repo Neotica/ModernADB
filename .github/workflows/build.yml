@@ -35,7 +35,7 @@ jobs:
           if [ "$RUNNER_OS" == "Windows" ]; then
             ./gradlew.bat packageMsi
           elif [ "$RUNNER_OS" == "Linux" ]; then
-            ./gradlew packageDeb
+            ./gradlew packageDeb packageRpm
           elif [ "$RUNNER_OS" == "macOS" ]; then
             ./gradlew packageDmg
           fi
@@ -67,3 +67,4 @@ jobs:
             artifacts/ModernADB-windows-latest/msi/*.msi
             artifacts/ModernADB-macos-latest/dmg/*.dmg
             artifacts/ModernADB-ubuntu-latest/deb/*.deb
+            artifacts/ModernADB-ubuntu-latest/rpm/*.rpm
